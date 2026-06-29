@@ -1,11 +1,10 @@
 import os
 from openai import OpenAI
+from typing import Dict, Any, List, Dict
 from dotenv import load_dotenv
-from typing import List, Dict
-
-# 加载 .env 文件中的环境变量
 load_dotenv()
 
+#LLM大模型
 class HelloAgentsLLM:
     """
     为本书 "Hello Agents" 定制的LLM客户端。
@@ -54,27 +53,19 @@ class HelloAgentsLLM:
             print(f"[Error] 调用LLM API时发生错误: {e}")
             return None
 
-# --- 客户端使用示例 ---
-if __name__ == '__main__':
-    try:
-        llmClient = HelloAgentsLLM()
-        
-        exampleMessages = [
-            {"role": "system", "content": "You are a helpful assistant that writes Python code."},
-            {"role": "user", "content": "写一个快速排序算法"}
-        ]
-        
-        print("--- 调用LLM ---")
-        responseText = llmClient.think(exampleMessages)
-        if responseText:
-            print("\n\n--- 完整模型响应 ---")
-            print(responseText)
+    # --- 客户端使用示例 ---
+    def predict(self):
+        try:
+            llmClient = HelloAgentsLLM()
+            exampleMessages = [
+                {"role": "system", "content": "You are a helpful assistant that writes Python code."},
+                {"role": "user", "content": "写一个快速排序算法"}
+            ]
+            print("--- 调用LLM ---")
+            responseText = llmClient.think(exampleMessages)
+            if responseText:
+                print("\n\n--- 完整模型响应 ---")
+                print(responseText)
 
-    except ValueError as e:
-        print(e)
-
-# >>>
-# --- 调用LLM ---
-# 🧠 正在调用 xxxxxx 模型...
-# ✅ 大语言模型响应成功:
-# 快速排序是一种非常高效的排序算法...
+        except ValueError as e:
+            print(e)
