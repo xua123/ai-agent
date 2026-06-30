@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Local Replica</title>
+    <!-- 引入 Google Fonts Roboto 和 Inter 字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Code Highlight CSS (Dracula theme for codeblocks) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧侧边栏 -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" id="new-chat-btn">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>New chat</span>
+                </button>
+                <button class="toggle-sidebar-btn" id="toggle-sidebar-btn" title="收起侧边栏">
+                    <i class="fa-solid fa-sidebar"></i>
+                </button>
+            </div>
+            
+            <!-- 会话搜索框 -->
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                <input type="text" id="session-search" placeholder="Search chats...">
+            </div>
+
+            <!-- 会话列表 -->
+            <div class="sidebar-nav">
+                <div class="nav-section-title">Recents</div>
+                <ul class="session-list" id="session-list">
+                    <!-- 动态加载历史会话 -->
+                </ul>
+            </div>
+
+
+        </aside>
+
+        <!-- 侧边栏展开按钮 (当侧边栏收起时显示) -->
+        <button class="expand-sidebar-btn hidden" id="expand-sidebar-btn" title="展开侧边栏">
+            <i class="fa-solid fa-sidebar"></i>
+        </button>
+
+        <!-- 右侧主对话区 -->
+        <main class="chat-area">
+            <!-- 头部控制栏 -->
+            <header class="chat-header">
+                <div class="header-left">
+                    <div class="model-selector" id="model-selector-btn">
+                        <span id="current-model-name">Qwen 3.5 35B</span>
+                        <i class="fa-solid fa-chevron-down dropdown-arrow"></i>
+                        <!-- 下拉菜单 -->
+                        <div class="model-dropdown-menu hidden" id="model-dropdown-menu">
+                            <!-- 动态加载可用模型列表 -->
+                        </div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <button class="theme-toggle-btn" id="theme-toggle-btn" title="切换深色/浅色主题">
+                        <i class="fa-regular fa-moon"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- 对话详情区 -->
+            <div class="messages-container" id="messages-container">
+                <!-- 欢迎界面（未选中会话或会话无消息时显示） -->
+                <div class="welcome-screen" id="welcome-screen">
+                    <div class="chatgpt-logo">
+                        <i class="fa-solid fa-circle-nodes"></i>
+                    </div>
+                    <h2 class="welcome-title">有什么我可以帮你的？</h2>
+                    <div class="suggestion-chips">
+                        <div class="chip" data-text="用一句话解释什么是量子力学">
+                            <i class="fa-solid fa-lightbulb icon-blue"></i>
+                            <span>解释量子力学</span>
+                        </div>
+                        <div class="chip" data-text="帮我写一封中文请假条，理由是感冒发烧">
+                            <i class="fa-solid fa-pen-to-square icon-green"></i>
+                            <span>写一封请假条</span>
+                        </div>
+                        <div class="chip" data-text="分析如何避免拖延症？提供3个核心实用的方法">
+                            <i class="fa-solid fa-hourglass-half icon-yellow"></i>
+                            <span>如何战胜拖延</span>
+                        </div>
+                        <div class="chip" data-text="写一段 Python 代码实现快速排序算法">
+                            <i class="fa-solid fa-code icon-purple"></i>
+                            <span>快速排序算法</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- 动态消息列表 -->
+                <div class="messages-list" id="messages-list"></div>
+            </div>
+
+            <!-- 底部输入框区 -->
+            <footer class="chat-footer-input">
+                <div class="input-container">
+                    <button class="input-action-btn attach-btn" title="上传文件">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                    <textarea class="message-input" id="message-input" rows="1" placeholder="Ask anything..." autocomplete="off"></textarea>
+                    <div class="input-right-actions">
+                        <button class="input-action-btn voice-btn" title="语音输入">
+                            <i class="fa-solid fa-microphone"></i>
+                        </button>
+                        <button class="send-message-btn disabled" id="send-message-btn" disabled>
+                            <i class="fa-solid fa-arrow-up"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="input-disclaimer">
+                    ChatGPT can make mistakes. Check important info.
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Highlight.js 代码高亮库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
