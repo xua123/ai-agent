@@ -96,9 +96,9 @@ class QdrantVectorStore:
                 "qdrant-client未安装。请运行: pip install qdrant-client>=1.6.0"
             )
         
-        self.url = url
-        self.api_key = api_key
-        self.collection_name = collection_name
+        self.url = url or os.getenv("QDRANT_URL")
+        self.api_key = api_key or os.getenv("QDRANT_API_KEY")
+        self.collection_name = collection_name or os.getenv("QDRANT_COLLECTION", "hello_agents_vectors")
         self.vector_size = vector_size
         self.timeout = timeout
         # HNSW/Query params via env
@@ -132,7 +132,14 @@ class QdrantVectorStore:
         """初始化Qdrant客户端和集合"""
         try:
             # 根据配置创建客户端连接
-            if self.url and self.api_key:
+            if self.url == ":memory:":
+                self.client = QdrantClient(location=":memory:")
+                logger.info("✅ 成功连接到内存Qdrant服务: :memory:")
+            elif self.url and (self.url.startswith(".") or self.url.startswith("/") or "\\" in self.url or self.url.startswith("file://")):
+                path = self.url.replace("file://", "")
+                self.client = QdrantClient(path=path)
+                logger.info(f"✅ 成功连接到本地磁盘Qdrant服务: {path}")
+            elif self.url and self.api_key:
                 # 使用云服务API
                 self.client = QdrantClient(
                     url=self.url,
@@ -509,8 +516,8 @@ class QdrantVectorStore:
             
             info = {
                 "name": self.collection_name,
-                "vectors_count": collection_info.vectors_count,
-                "indexed_vectors_count": collection_info.indexed_vectors_count,
+                "vectors_count": getattr(collection_info, "vectors_count", collection_info.points_count),
+                "indexed_vectors_count": getattr(collection_info, "indexed_vectors_count", 0),
                 "points_count": collection_info.points_count,
                 "segments_count": collection_info.segments_count,
                 "config": {

@@ -26,6 +26,19 @@
                 </button>
             </div>
             
+            <!-- Chapter8 Menu Item -->
+            <div class="sidebar-menu" style="padding: 0 12px 10px 12px;">
+                <button class="new-chat-btn" id="chapter8-btn" style="width: 100%; border: 1px solid var(--border-color); background-color: transparent;">
+                    <i class="fa-solid fa-book"></i>
+                    <span>chapter8</span>
+                </button>
+                <button class="new-chat-btn" id="wechat-btn" style="width: 100%; border: 1px solid var(--border-color); background-color: transparent; margin-top: 8px;">
+                    <i class="fa-brands fa-weixin"></i>
+                    <span>wechat</span>
+                </button>
+            </div>
+            
+            
             <!-- 会话搜索框 -->
             <div class="search-box">
                 <i class="fa-solid fa-magnifying-glass search-icon"></i>
@@ -48,8 +61,8 @@
             <i class="fa-solid fa-sidebar"></i>
         </button>
 
-        <!-- 右侧主对话区 -->
-        <main class="chat-area">
+        <!-- 右侧主面板 -->
+        <div class="right-pane" style="flex: 1; display: flex; flex-direction: column; height: 100%;">
             <!-- 头部控制栏 -->
             <header class="chat-header">
                 <div class="header-left">
@@ -69,58 +82,94 @@
                 </div>
             </header>
 
-            <!-- 对话详情区 -->
-            <div class="messages-container" id="messages-container">
-                <!-- 欢迎界面（未选中会话或会话无消息时显示） -->
-                <div class="welcome-screen" id="welcome-screen">
-                    <div class="chatgpt-logo">
-                        <i class="fa-solid fa-circle-nodes"></i>
-                    </div>
-                    <h2 class="welcome-title">有什么我可以帮你的？</h2>
-                    <div class="suggestion-chips">
-                        <div class="chip" data-text="用一句话解释什么是量子力学">
-                            <i class="fa-solid fa-lightbulb icon-blue"></i>
-                            <span>解释量子力学</span>
-                        </div>
-                        <div class="chip" data-text="帮我写一封中文请假条，理由是感冒发烧">
-                            <i class="fa-solid fa-pen-to-square icon-green"></i>
-                            <span>写一封请假条</span>
-                        </div>
-                        <div class="chip" data-text="分析如何避免拖延症？提供3个核心实用的方法">
-                            <i class="fa-solid fa-hourglass-half icon-yellow"></i>
-                            <span>如何战胜拖延</span>
-                        </div>
-                        <div class="chip" data-text="写一段 Python 代码实现快速排序算法">
-                            <i class="fa-solid fa-code icon-purple"></i>
-                            <span>快速排序算法</span>
-                        </div>
-                    </div>
+            <div class="content-body" style="flex: 1; display: flex; position: relative; overflow: hidden; height: calc(100% - 60px);">
+                <!-- Chapter8 Gradio 容器 -->
+                <div class="chapter8-container hidden" id="chapter8-container" style="width: 100%; height: 100%; display: flex; flex-direction: column;">
+                    <iframe id="chapter8-iframe" src="" style="width: 100%; height: 100%; border: none; background-color: var(--bg-main);"></iframe>
                 </div>
-                <!-- 动态消息列表 -->
-                <div class="messages-list" id="messages-list"></div>
-            </div>
 
-            <!-- 底部输入框区 -->
-            <footer class="chat-footer-input">
-                <div class="input-container">
-                    <button class="input-action-btn attach-btn" title="上传文件">
-                        <i class="fa-solid fa-plus"></i>
-                    </button>
-                    <textarea class="message-input" id="message-input" rows="1" placeholder="Ask anything..." autocomplete="off"></textarea>
-                    <div class="input-right-actions">
-                        <button class="input-action-btn voice-btn" title="语音输入">
-                            <i class="fa-solid fa-microphone"></i>
-                        </button>
-                        <button class="send-message-btn disabled" id="send-message-btn" disabled>
-                            <i class="fa-solid fa-arrow-up"></i>
-                        </button>
+                <!-- WeChat / WeWe RSS 容器 -->
+                <div class="wechat-container hidden" id="wechat-container">
+                    <div class="wechat-toolbar">
+                        <div class="wechat-title">
+                            <i class="fa-brands fa-weixin"></i>
+                            <span>WeWe RSS</span>
+                            <span class="wechat-status" id="wechat-status">Checking...</span>
+                        </div>
+                        <div class="wechat-actions">
+                            <button class="header-action-btn" id="wechat-start-btn">
+                                <i class="fa-solid fa-play"></i>
+                                <span>Start</span>
+                            </button>
+                            <button class="header-action-btn" id="wechat-report-btn">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Run report</span>
+                            </button>
+                            <a class="header-action-btn wechat-open-link" id="wechat-open-link" href="http://127.0.0.1:4000/dash" target="_blank" rel="noopener noreferrer">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                                <span>Open</span>
+                            </a>
+                        </div>
                     </div>
+                    <iframe id="wechat-iframe" src="" title="WeWe RSS dashboard"></iframe>
                 </div>
-                <div class="input-disclaimer">
-                    ChatGPT can make mistakes. Check important info.
-                </div>
-            </footer>
-        </main>
+
+                <!-- 右侧主对话区 -->
+                <main class="chat-area" style="width: 100%; height: 100%; display: flex; flex-direction: column;">
+                    <!-- 对话详情区 -->
+                    <div class="messages-container" id="messages-container">
+                        <!-- 欢迎界面（未选中会话或会话无消息时显示） -->
+                        <div class="welcome-screen" id="welcome-screen">
+                            <div class="chatgpt-logo">
+                                <i class="fa-solid fa-circle-nodes"></i>
+                            </div>
+                            <h2 class="welcome-title">有什么我可以帮你的？</h2>
+                            <div class="suggestion-chips">
+                                <div class="chip" data-text="用一句话解释什么是量子力学">
+                                    <i class="fa-solid fa-lightbulb icon-blue"></i>
+                                    <span>解释量子力学</span>
+                                </div>
+                                <div class="chip" data-text="帮我写一封中文请假条，理由是感冒发烧">
+                                    <i class="fa-solid fa-pen-to-square icon-green"></i>
+                                    <span>写一封请假条</span>
+                                </div>
+                                <div class="chip" data-text="分析如何避免拖延症？提供3个核心实用的方法">
+                                    <i class="fa-solid fa-hourglass-half icon-yellow"></i>
+                                    <span>如何战胜拖延</span>
+                                </div>
+                                <div class="chip" data-text="写一段 Python 代码实现快速排序算法">
+                                    <i class="fa-solid fa-code icon-purple"></i>
+                                    <span>快速排序算法</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 动态消息列表 -->
+                        <div class="messages-list" id="messages-list"></div>
+                    </div>
+
+                    <!-- 底部输入框区 -->
+                    <footer class="chat-footer-input">
+                        <div class="input-container">
+                            <button class="input-action-btn attach-btn" title="上传文件">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                            <textarea class="message-input" id="message-input" rows="1" placeholder="Ask anything..." autocomplete="off"></textarea>
+                            <div class="input-right-actions">
+                                <button class="input-action-btn voice-btn" title="语音输入">
+                                    <i class="fa-solid fa-microphone"></i>
+                                </button>
+                                <button class="send-message-btn disabled" id="send-message-btn" disabled>
+                                    <i class="fa-solid fa-arrow-up"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="input-disclaimer">
+                            ChatGPT can make mistakes. Check important info.
+                        </div>
+                    </footer>
+                </main>
+            </div>
+        </div>
     </div>
 
     <!-- Highlight.js 代码高亮库 -->

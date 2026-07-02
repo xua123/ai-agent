@@ -30,6 +30,17 @@ const messageInput = document.getElementById("message-input");
 const sendMessageBtn = document.getElementById("send-message-btn");
 const suggestionChips = document.querySelectorAll(".chip");
 const themeToggleBtn = document.getElementById("theme-toggle-btn");
+const chapter8Btn = document.getElementById("chapter8-btn");
+const wechatBtn = document.getElementById("wechat-btn");
+const chatArea = document.querySelector(".chat-area");
+const chapter8Container = document.getElementById("chapter8-container");
+const chapter8Iframe = document.getElementById("chapter8-iframe");
+const wechatContainer = document.getElementById("wechat-container");
+const wechatIframe = document.getElementById("wechat-iframe");
+const wechatStatus = document.getElementById("wechat-status");
+const wechatStartBtn = document.getElementById("wechat-start-btn");
+const wechatReportBtn = document.getElementById("wechat-report-btn");
+const wechatOpenLink = document.getElementById("wechat-open-link");
 
 // 根据本地缓存初始化加载主题设置
 const savedTheme = localStorage.getItem("theme") || "dark";
@@ -113,6 +124,22 @@ async function createNewSession() {
 
 async function selectSession(sessionId) {
     state.currentSessionId = sessionId;
+    
+    // 切换回聊天区域视图
+    if (chatArea && chapter8Container && wechatContainer) {
+        chatArea.classList.remove("hidden");
+        chapter8Container.classList.add("hidden");
+        wechatContainer.classList.add("hidden");
+    }
+    if (chapter8Btn) {
+        chapter8Btn.classList.remove("active");
+    }
+    if (wechatBtn) {
+        wechatBtn.classList.remove("active");
+    }
+    if (modelSelectorBtn) {
+        modelSelectorBtn.classList.remove("disabled-selector");
+    }
     
     // 更新侧边栏高亮状态
     const items = sessionListContainer.querySelectorAll(".session-item");
@@ -438,6 +465,110 @@ async function submitUserMessage() {
 }
 
 // ==========================================================================
+// 工具页面切换与 WeChat 集成
+// ==========================================================================
+function showToolView(toolName) {
+    state.currentSessionId = null;
+
+    const sessionItems = sessionListContainer.querySelectorAll(".session-item");
+    sessionItems.forEach(item => item.classList.remove("active"));
+
+    if (chatArea) {
+        chatArea.classList.toggle("hidden", toolName !== "chat");
+    }
+    if (chapter8Container) {
+        chapter8Container.classList.toggle("hidden", toolName !== "chapter8");
+    }
+    if (wechatContainer) {
+        wechatContainer.classList.toggle("hidden", toolName !== "wechat");
+    }
+    if (chapter8Btn) {
+        chapter8Btn.classList.toggle("active", toolName === "chapter8");
+    }
+    if (wechatBtn) {
+        wechatBtn.classList.toggle("active", toolName === "wechat");
+    }
+    if (modelSelectorBtn) {
+        modelSelectorBtn.classList.toggle("disabled-selector", toolName !== "chat");
+    }
+}
+
+async function refreshWechatStatus() {
+    if (!wechatStatus) return null;
+
+    try {
+        const response = await fetch("/api/wechat/status");
+        const status = await response.json();
+
+        wechatStatus.textContent = status.running ? "Running" : "Stopped";
+        wechatStatus.classList.toggle("running", status.running);
+        wechatStatus.classList.toggle("stopped", !status.running);
+
+        if (wechatOpenLink) {
+            wechatOpenLink.href = status.dash_url;
+        }
+        if (wechatIframe && status.running && (!wechatIframe.src || !wechatIframe.getAttribute("src"))) {
+            wechatIframe.src = status.dash_url;
+        }
+
+        return status;
+    } catch (e) {
+        console.error("获取 WeChat 状态失败", e);
+        wechatStatus.textContent = "Offline";
+        wechatStatus.classList.remove("running");
+        wechatStatus.classList.add("stopped");
+        return null;
+    }
+}
+
+async function startWechatService() {
+    if (!wechatStartBtn) return;
+
+    wechatStartBtn.disabled = true;
+    wechatStartBtn.classList.add("disabled");
+    wechatStatus.textContent = "Starting...";
+
+    try {
+        await fetch("/api/wechat/start", { method: "POST" });
+        setTimeout(async () => {
+            const status = await refreshWechatStatus();
+            if (status && status.running && wechatIframe) {
+                wechatIframe.src = status.dash_url;
+            }
+        }, 2500);
+    } catch (e) {
+        console.error("启动 WeWe RSS 失败", e);
+        wechatStatus.textContent = "Start failed";
+    } finally {
+        setTimeout(() => {
+            wechatStartBtn.disabled = false;
+            wechatStartBtn.classList.remove("disabled");
+        }, 1500);
+    }
+}
+
+async function runWechatReport() {
+    if (!wechatReportBtn) return;
+
+    wechatReportBtn.disabled = true;
+    wechatReportBtn.classList.add("disabled");
+    const originalText = wechatReportBtn.querySelector("span").textContent;
+    wechatReportBtn.querySelector("span").textContent = "Running";
+
+    try {
+        await fetch("/api/wechat/report", { method: "POST" });
+    } catch (e) {
+        console.error("执行微信公众号日报失败", e);
+    } finally {
+        setTimeout(() => {
+            wechatReportBtn.disabled = false;
+            wechatReportBtn.classList.remove("disabled");
+            wechatReportBtn.querySelector("span").textContent = originalText;
+        }, 2500);
+    }
+}
+
+// ==========================================================================
 // 辅助事件绑定和工具函数
 // ==========================================================================
 function initEventListeners() {
@@ -454,6 +585,37 @@ function initEventListeners() {
 
     // 新建会话按钮
     newChatBtn.addEventListener("click", createNewSession);
+
+    // Chapter8 按钮点击
+    if (chapter8Btn) {
+        chapter8Btn.addEventListener("click", () => {
+            showToolView("chapter8");
+
+            // 延迟加载 iframe 内容
+            if (chapter8Iframe && (!chapter8Iframe.src || chapter8Iframe.src.endsWith("blank") || !chapter8Iframe.getAttribute("src"))) {
+                chapter8Iframe.src = "/chapter8/";
+            }
+        });
+    }
+
+    // WeChat / WeWe RSS 按钮点击
+    if (wechatBtn) {
+        wechatBtn.addEventListener("click", async () => {
+            showToolView("wechat");
+            const status = await refreshWechatStatus();
+            if (status && status.running && wechatIframe) {
+                wechatIframe.src = status.dash_url;
+            }
+        });
+    }
+
+    if (wechatStartBtn) {
+        wechatStartBtn.addEventListener("click", startWechatService);
+    }
+
+    if (wechatReportBtn) {
+        wechatReportBtn.addEventListener("click", runWechatReport);
+    }
 
     // 搜索历史会话
     sessionSearchInput.addEventListener("input", (e) => {

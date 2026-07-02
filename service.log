@@ -1,14 +1,47 @@
-INFO:     Started server process [13808]
+c:\Users\92410\Desktop\技术分享\ai-agent\chapter8\11_Q&A_Assistant.py:338: UserWarning: The parameters have been moved from the Blocks constructor to the launch() method in Gradio 6.0: theme. Please pass these parameters to launch() instead.
+  with gr.Blocks(title="智能文档问答助手", theme=gr.themes.Soft()) as demo:
+Chapter 8 Q&A Assistant mounted successfully at /chapter8
+INFO:     Started server process [17068]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
-INFO:     127.0.0.1:60622 - "GET / HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:60622 - "GET /styles.css HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:55473 - "GET /app.js HTTP/1.1" 304 Not Modified
-INFO:     127.0.0.1:55473 - "GET /api/models HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55473 - "GET /api/sessions HTTP/1.1" 200 OK
-INFO:     127.0.0.1:55473 - "GET /api/sessions/session_31dbd217/messages HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64454 - "PUT /api/sessions/session_31dbd217/model HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64454 - "POST /api/sessions/session_31dbd217/chat HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64454 - "GET /api/sessions HTTP/1.1" 200 OK
-INFO:     127.0.0.1:64454 - "GET /api/sessions/session_31dbd217/messages HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58027 - "GET / HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:58027 - "GET /styles.css HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53511 - "GET /app.js HTTP/1.1" 304 Not Modified
+INFO:     127.0.0.1:53511 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53511 - "GET /api/sessions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53511 - "GET /api/sessions/session_31dbd217/messages HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53511 - "GET /api/models HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53511 - "GET /api/sessions HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53511 - "GET /api/sessions/session_31dbd217/messages HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53511 - "GET /chapter8/ HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53511 - "GET /chapter8/theme.css?v=8ad6f9b14414574fe6c6d9b4362dcdd63dfdc66d8c34cbef0982888dfc44ff04 HTTP/1.1" 200 OK
+C:\Users\92410\.conda\envs\ai_agent\Lib\site-packages\gradio\routes.py:1379: StarletteDeprecationWarning: 'HTTP_422_UNPROCESSABLE_ENTITY' is deprecated. Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead.
+  return await queue_join_helper(body, request, username)
+INFO:     127.0.0.1:53511 - "POST /chapter8/gradio_api/queue/join HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53511 - "GET /chapter8/gradio_api/queue/data?session_hash=rwcr5ic042 HTTP/1.1" 200 OK
+[OK] SQLite 数据库表和索引创建完成
+[OK] SQLite 文档存储初始化完成: ./memory_data\memory.db
+INFO:sentence_transformers.base.model:No device provided, using cpu
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING:huggingface_hub.utils._http:Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+INFO:sentence_transformers.base.model:Loading SentenceTransformer model from sentence-transformers/all-MiniLM-L6-v2.
+Loading weights:   0%|          | 0/103 [00:00<?, ?it/s]Loading weights: 100%|██████████| 103/103 [00:00<00:00, 6048.07it/s]
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  7.80it/s]Batches: 100%|██████████| 1/1 [00:00<00:00,  7.76it/s]
+INFO:hello_agents.memory.storage.qdrant_store:✅ 成功连接到Qdrant云服务: https://c3c63e3b-9e74-4d5d-82f8-2712faacd7c2.eu-central-1-0.aws.cloud.qdrant.io
+INFO:hello_agents.memory.storage.qdrant_store:✅ 使用现有Qdrant集合: hello_agents_vectors
+Batches:   0%|          | 0/1 [00:00<?, ?it/s]Batches: 100%|██████████| 1/1 [00:00<00:00, 13.02it/s]
+INFO:hello_agents.memory.types.semantic:✅ 嵌入模型就绪，维度: 384
+INFO:hello_agents.memory.types.semantic:✅ Qdrant向量数据库初始化完成
+INFO:hello_agents.memory.storage.neo4j_store:✅ 成功连接到Neo4j云服务: neo4j+s://04702fdd.databases.neo4j.io
+INFO:hello_agents.memory.storage.neo4j_store:✅ Neo4j索引创建完成
+INFO:hello_agents.memory.types.semantic:✅ Neo4j图数据库初始化完成
+INFO:hello_agents.memory.types.semantic:🏥 数据库健康状态: Qdrant=✅, Neo4j=✅
+WARNING:hello_agents.memory.types.semantic:⚠️ 中文spaCy模型不可用: zh_core_web_sm
+WARNING:hello_agents.memory.types.semantic:⚠️ 英文spaCy模型不可用: en_core_web_sm
+WARNING:hello_agents.memory.types.semantic:⚠️ 无可用spaCy模型，实体提取将受限
+INFO:hello_agents.memory.types.semantic:增强语义记忆初始化完成（使用Qdrant+Neo4j专业数据库）
+INFO:hello_agents.memory.manager:MemoryManager初始化完成，启用记忆类型: ['working', 'episodic', 'semantic']
+INFO:hello_agents.memory.storage.qdrant_store:✅ 成功连接到Qdrant云服务: https://c3c63e3b-9e74-4d5d-82f8-2712faacd7c2.eu-central-1-0.aws.cloud.qdrant.io
+INFO:hello_agents.memory.storage.qdrant_store:✅ 使用现有Qdrant集合: rag_knowledge_base
+✅ RAG工具初始化成功: namespace=pdf_web_user, collection=rag_knowledge_base

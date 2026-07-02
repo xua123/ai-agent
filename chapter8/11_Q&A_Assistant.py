@@ -17,7 +17,7 @@ import time
 import json
 from datetime import datetime
 from typing import Dict, List, Optional, Any, Tuple
-from .tools import MemoryTool, RAGTool
+from hello_agents.tools import MemoryTool, RAGTool
 import gradio as gr
 
 class PDFLearningAssistant:
@@ -275,7 +275,10 @@ def create_gradio_ui():
     def chat(message: str, history: List) -> Tuple[str, List]:
         """聊天功能"""
         if assistant_state["assistant"] is None:
-            return "", history + [[message, "❌ 请先初始化助手并加载文档"]]
+            return "", history + [
+                {"role": "user", "content": message},
+                {"role": "assistant", "content": "❌ 请先初始化助手并加载文档"}
+            ]
 
         if not message.strip():
             return "", history
@@ -290,7 +293,8 @@ def create_gradio_ui():
             response = assistant_state["assistant"].ask(message)
             response = f"💡 **回答**\n\n{response}"
 
-        history.append([message, response])
+        history.append({"role": "user", "content": message})
+        history.append({"role": "assistant", "content": response})
         return "", history
 
     def add_note_ui(note_content: str, concept: str) -> str:
@@ -373,8 +377,7 @@ def create_gradio_ui():
             gr.Markdown("### 向文档提问或回顾学习历程")
             chatbot = gr.Chatbot(
                 label="对话历史",
-                height=400,
-                bubble_full_width=False
+                height=400
             )
             with gr.Row():
                 msg_input = gr.Textbox(
@@ -423,6 +426,9 @@ def create_gradio_ui():
             report_btn = gr.Button("生成报告", variant="primary")
             report_output = gr.Textbox(label="报告状态", interactive=False)
             report_btn.click(generate_report_ui, outputs=[report_output])
+
+        # 页面加载时自动初始化助手
+        demo.load(fn=init_assistant, inputs=[user_id_input], outputs=[init_output])
 
     return demo
 

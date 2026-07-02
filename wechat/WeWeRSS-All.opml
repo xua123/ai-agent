@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+    <opml version="2.0">
+      <head>
+        <title>WeWeRSS 所有订阅源</title>
+      </head>
+      <body>
+        <outline text="淘沙客投研说" type="rss" xmlUrl="http://localhost:4000/feeds/MP_WXS_3550967828.atom" htmlUrl="http://localhost:4000/feeds/MP_WXS_3550967828.atom"/>
+    <outline text="富察阁主" type="rss" xmlUrl="http://localhost:4000/feeds/MP_WXS_3199094167.atom" htmlUrl="http://localhost:4000/feeds/MP_WXS_3199094167.atom"/>
+    </body>
+    </opml>

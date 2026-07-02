@@ -1,7 +1,10 @@
 import os
+import sys
 import json
 import uuid
 import asyncio
+import socket
+import subprocess
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException, Body
@@ -26,6 +29,38 @@ app.add_middleware(
 )
 
 SESSIONS_FILE = os.path.join(os.path.dirname(__file__), "sessions.json")
+PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+WECHAT_PORT = 4000
+WECHAT_DIR = os.path.join(PROJECT_ROOT, "wechat")
+WEWE_RSS_APP_DIR = os.path.join(WECHAT_DIR, "wewe-rss-app")
+WEWE_RSS_START_SCRIPT = os.path.join(WEWE_RSS_APP_DIR, "scripts", "start-wewe-rss.ps1")
+WECHAT_REPORT_SCRIPT = os.path.join(WECHAT_DIR, "start.py")
+WECHAT_LOG_DIR = os.path.join(WEWE_RSS_APP_DIR, "logs")
+
+
+def is_port_in_use(port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.settimeout(0.5)
+        return sock.connect_ex(("127.0.0.1", port)) == 0
+
+
+def start_background_process(cmd: list[str], cwd: str, log_name: str) -> int:
+    os.makedirs(WECHAT_LOG_DIR, exist_ok=True)
+    log_path = os.path.join(WECHAT_LOG_DIR, log_name)
+    creationflags = 0
+    if os.name == "nt":
+        creationflags = subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.CREATE_NO_WINDOW
+
+    log_file = open(log_path, "a", encoding="utf-8")
+    process = subprocess.Popen(
+        cmd,
+        cwd=cwd,
+        stdout=log_file,
+        stderr=subprocess.STDOUT,
+        stdin=subprocess.DEVNULL,
+        creationflags=creationflags,
+    )
+    return process.pid
 
 # 数据结构定义
 class Message(BaseModel):
@@ -280,6 +315,70 @@ async def chat_session(session_id: str, content: str = Body(..., embed=True)):
         yield "data: [DONE]\n\n"
 
     return StreamingResponse(chat_generator(), media_type="text/event-stream")
+
+
+@app.get("/api/wechat/status")
+async def get_wechat_status():
+    running = is_port_in_use(WECHAT_PORT)
+    return {
+        "running": running,
+        "port": WECHAT_PORT,
+        "dash_url": f"http://127.0.0.1:{WECHAT_PORT}/dash",
+        "feeds_url": f"http://127.0.0.1:{WECHAT_PORT}/feeds",
+        "opml_exists": os.path.exists(os.path.join(WECHAT_DIR, "WeWeRSS-All.opml")),
+        "report_script_exists": os.path.exists(WECHAT_REPORT_SCRIPT),
+    }
+
+
+@app.post("/api/wechat/start")
+async def start_wewe_rss_service():
+    if is_port_in_use(WECHAT_PORT):
+        return {"status": "running", "message": "WeWe RSS 已在运行"}
+
+    if not os.path.exists(WEWE_RSS_START_SCRIPT):
+        raise HTTPException(status_code=404, detail=f"未找到启动脚本: {WEWE_RSS_START_SCRIPT}")
+
+    pid = start_background_process(
+        [
+            "powershell.exe",
+            "-NoProfile",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-File",
+            WEWE_RSS_START_SCRIPT,
+        ],
+        cwd=WEWE_RSS_APP_DIR,
+        log_name="start-from-ai-agent.log",
+    )
+    return {"status": "starting", "pid": pid, "message": "WeWe RSS 正在启动"}
+
+
+@app.post("/api/wechat/report")
+async def run_wechat_report():
+    if not os.path.exists(WECHAT_REPORT_SCRIPT):
+        raise HTTPException(status_code=404, detail=f"未找到日报脚本: {WECHAT_REPORT_SCRIPT}")
+
+    pid = start_background_process(
+        [sys.executable, WECHAT_REPORT_SCRIPT],
+        cwd=WECHAT_DIR,
+        log_name="wechat-report.log",
+    )
+    return {"status": "started", "pid": pid, "message": "微信公众号日报任务已启动"}
+
+# 导入 Chapter 8 Q&A 助手 Gradio UI 并挂载
+try:
+    import sys
+    import importlib
+    parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    if parent_dir not in sys.path:
+        sys.path.append(parent_dir)
+    qa_assistant = importlib.import_module("chapter8.11_Q&A_Assistant")
+    demo = qa_assistant.create_gradio_ui()
+    import gradio as gr
+    app = gr.mount_gradio_app(app, demo, path="/chapter8")
+    print("Chapter 8 Q&A Assistant mounted successfully at /chapter8")
+except Exception as e:
+    print(f"Error mounting chapter8 Gradio app: {e}")
 
 # 挂载静态文件目录，实现 HTML 页面展示
 # 如果 static 文件夹不存在，我们在启动时创建它

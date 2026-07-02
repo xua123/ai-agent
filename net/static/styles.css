@@ -445,6 +445,12 @@ body, html {
     background-color: var(--hover-bg);
 }
 
+.header-action-btn.disabled,
+.header-action-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
 .upgrade-btn {
     border-color: rgba(16, 163, 127, 0.3);
 }
@@ -861,4 +867,109 @@ body.light-theme .message-row.assistant {
 .theme-toggle-btn:hover {
     background-color: var(--hover-bg);
     transform: rotate(30deg);
+}
+
+/* 通用隐藏类 */
+.hidden {
+    display: none !important;
+}
+
+/* 工具按钮激活状态样式 */
+#chapter8-btn.active,
+#wechat-btn.active {
+    background-color: var(--hover-bg) !important;
+    border-color: var(--text-secondary) !important;
+}
+
+/* 模型选择器禁用/置灰样式 */
+.model-selector.disabled-selector {
+    pointer-events: none;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* WeChat / WeWe RSS 面板 */
+.wechat-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--bg-main);
+}
+
+.wechat-toolbar {
+    min-height: 58px;
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.wechat-title,
+.wechat-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wechat-title {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.wechat-title i {
+    color: var(--accent-color);
+    font-size: 18px;
+}
+
+.wechat-status {
+    min-width: 74px;
+    height: 24px;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    padding: 0 10px;
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.wechat-status.running {
+    color: var(--accent-color);
+    border-color: rgba(16, 163, 127, 0.45);
+    background-color: rgba(16, 163, 127, 0.12);
+}
+
+.wechat-status.stopped {
+    color: var(--danger-color);
+    border-color: rgba(255, 75, 75, 0.4);
+    background-color: rgba(255, 75, 75, 0.09);
+}
+
+.wechat-open-link {
+    text-decoration: none;
+}
+
+#wechat-iframe {
+    width: 100%;
+    flex: 1;
+    border: none;
+    background-color: var(--bg-main);
+}
+
+@media (max-width: 720px) {
+    .wechat-toolbar {
+        align-items: stretch;
+    }
+
+    .wechat-actions {
+        width: 100%;
+        justify-content: flex-start;
+        overflow-x: auto;
+    }
 }
